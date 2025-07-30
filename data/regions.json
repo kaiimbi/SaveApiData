@@ -1,11 +1,235 @@
 {
-  "division":
-  {
-    "region_name" : "Adana",
-    "units" : [
-      {
-
-      }
-    ]
-  }
+  "divisions": [
+    {
+      "region_name": "Adana",
+      "franchise": "Sergei",
+      "trendyol_supplier_id" : "853152",
+      "units": [
+        {
+          "dodois_name": "Adana-1",
+          "dodois_unit_id": "11f04e6e87308350d7eef789be63dc70",
+          "yemeksepeti_pos_id": "pv1p",
+          "yemeksepeti_platform_id": "pv1p",
+          "trendyol_id": "373717"
+        },
+        {
+          "dodois_name": "Adana-2",
+          "dodois_unit_id": "11f04e70a27fe9e990fcff67e1238330",
+          "yemeksepeti_pos_id": "wegd",
+          "yemeksepeti_platform_id": "wegd",
+          "trendyol_id": "379129"
+        },
+        {
+          "dodois_name": "Adana-3",
+          "dodois_unit_id": "11f04e71b53585cd1cefcecaf7a9b290",
+          "yemeksepeti_pos_id": "wrpq",
+          "yemeksepeti_platform_id": "wrpq",
+          "trendyol_id": "374489"
+        },
+        {
+          "dodois_name": "Adana-4",
+          "dodois_unit_id": "11f04e72b722c3379e20d0d854746d80",
+          "yemeksepeti_pos_id": "qzmy",
+          "yemeksepeti_platform_id": "qzmy",
+          "trendyol_id": "379657"
+        }
+      ]
+    },
+    {
+      "region_name": "Mersin",
+      "franchise": "Sergei",
+      "trendyol_supplier_id" : "853152",
+      "units": [
+        {
+          "dodois_name": "Mersin-1",
+          "dodois_unit_id": "2a7a244e0082850311ee1752c5d17748",
+          "yemeksepeti_pos_id": "bcb6",
+          "yemeksepeti_platform_id": "bcb6",
+          "trendyol_id": "222325"
+        },
+        {
+          "dodois_name": "Mersin-2",
+          "dodois_unit_id": "a608e69ce790a49f11ee7d6b9e033891",
+          "yemeksepeti_pos_id": "gs4v",
+          "yemeksepeti_platform_id": "gs4v",
+          "trendyol_id": "235878"
+        },
+        {
+          "dodois_name": "Mersin-3",
+          "dodois_unit_id": "a608e69ce790a4a111ee7d715ac41172",
+          "yemeksepeti_pos_id": "ss3p",
+          "yemeksepeti_platform_id": "ss3p",
+          "trendyol_id": "243011"
+        },
+        {
+          "dodois_name": "Mersin-4",
+          "dodois_unit_id": "02a7d3c29ef19be611ef3f5de14c8ff6",
+          "yemeksepeti_pos_id": "vsba",
+          "yemeksepeti_platform_id": "vsba",
+          "trendyol_id": "301698"
+        }
+      ]
+    },
+    {
+      "region_name": "Izmir",
+      "franchise": "Sergei",
+      "trendyol_supplier_id" : "834064",
+      "units": [
+        {
+          "dodois_name": "Izmir-1",
+          "dodois_unit_id": "aaaad477ff73975811ede043f972f6a1",
+          "yemeksepeti_pos_id": "e8c9",
+          "yemeksepeti_platform_id": "e8c9",
+          "trendyol_id": "221570"
+        },
+        {
+          "dodois_name": "Izmir-2",
+          "dodois_unit_id": "22be49ec97d9bf6c11ee33838c74b85c",
+          "yemeksepeti_pos_id": "x7kp",
+          "yemeksepeti_platform_id": "x7kp",
+          "trendyol_id": "243499"
+        },
+        {
+          "dodois_name": "Izmir-3",
+          "dodois_unit_id": "22be49ec97d9bf6d11ee3384586c9430",
+          "yemeksepeti_pos_id": "vswj",
+          "yemeksepeti_platform_id": "vswj",
+          "trendyol_id": "231460"
+        },
+        {
+          "dodois_name": "Izmir-4",
+          "dodois_unit_id": "e253122124babf6311ee781161ec00e7",
+          "yemeksepeti_pos_id": "izmir_4_store",
+          "yemeksepeti_platform_id": "hcni",
+          "trendyol_id": "278097"
+        },
+        {
+          "dodois_name": "Izmir-5",
+          "dodois_unit_id": "ea2bdbec96258dd311eeb626fcd928ee",
+          "yemeksepeti_pos_id": "izmir_5_store",
+          "yemeksepeti_platform_id": "q2n8",
+          "trendyol_id": "283557"
+        },
+        {
+          "dodois_name": "Izmir-6",
+          "dodois_unit_id": "3ec98dcd2707bf5f11eec12cf1be506a",
+          "yemeksepeti_pos_id": "izmir_6_store",
+          "yemeksepeti_platform_id": "wpwm",
+          "trendyol_id": "291780"
+        },
+        {
+          "dodois_name": "Izmir-7",
+          "dodois_unit_id": "3ec98dcd2707bf6011eec130f0673c02",
+          "yemeksepeti_pos_id": "rx5x",
+          "yemeksepeti_platform_id": "rx5x",
+          "trendyol_id": "356647"
+        },
+        {
+          "dodois_name": "Izmir-8",
+          "dodois_unit_id": "11ef9edfa89695c5a30916db0b08dac0",
+          "yemeksepeti_pos_id": null,
+          "yemeksepeti_platform_id": null,
+          "trendyol_id": null
+        },
+        {
+          "dodois_name": "Izmir-9",
+          "dodois_unit_id": "11ef7dacb06ea90ca49a95499b40d920",
+          "yemeksepeti_pos_id": "n6ie",
+          "yemeksepeti_platform_id": "n6ie",
+          "trendyol_id": "312471"
+        },
+        {
+          "dodois_name": "Izmir-10",
+          "dodois_unit_id": "11ef9ee0a8f9eb213b490c2e164fdbd0",
+          "yemeksepeti_pos_id": "gczk",
+          "yemeksepeti_platform_id": "gczk",
+          "trendyol_id": "324477"
+        },
+        {
+          "dodois_name": "Izmir-11",
+          "dodois_unit_id": "11f035758eb59f520f8ff780940b0000",
+          "yemeksepeti_pos_id": "qgnf",
+          "yemeksepeti_platform_id": "qgnf",
+          "trendyol_id": "378790"
+        },
+        {
+          "dodois_name": "Izmir-12",
+          "dodois_unit_id": "11f03576a3a6533c4d41559ee819bfa0",
+          "yemeksepeti_pos_id": "a1rd",
+          "yemeksepeti_platform_id": "a1rd",
+          "trendyol_id": "373437"
+        },
+        {
+          "dodois_name": "Menemen-1",
+          "dodois_unit_id": "865d21ac32dc882711ef42d6f69d2811",
+          "yemeksepeti_pos_id": "zo4o",
+          "yemeksepeti_platform_id": "zo4o",
+          "trendyol_id": "300365"
+        },
+        {
+          "dodois_name": "Manisa-1",
+          "dodois_unit_id": "11efff1ca956011c4394d31c2681e970",
+          "yemeksepeti_pos_id": "ix17",
+          "yemeksepeti_platform_id": "ix17",
+          "trendyol_id": "358644"
+        }
+      ]
+    },
+    {
+      "region_name": "Antalya",
+      "franchise": "Kisanov",
+      "trendyol_supplier_id" : "834675",
+      "units": [
+        {
+          "dodois_name": "Antalya-1",
+          "dodois_unit_id": "5a8a97a2be6ba0d511ee16800de81732",
+          "yemeksepeti_pos_id": "so98",
+          "yemeksepeti_platform_id": "so98",
+          "trendyol_id": "216142"
+        },
+        {
+          "dodois_name": "Antalya-2",
+          "dodois_unit_id": "2efd3c42b53d92d611eee75654c5ac94",
+          "yemeksepeti_pos_id": "c7la",
+          "yemeksepeti_platform_id": "c7la",
+          "trendyol_id": "291173"
+        },
+        {
+          "dodois_name": "Antalya-3",
+          "dodois_unit_id": "b6767c8268d79d4911eee759a716ee44",
+          "yemeksepeti_pos_id": "uqc1",
+          "yemeksepeti_platform_id": "uqc1",
+          "trendyol_id": "363131"
+        },
+        {
+          "dodois_name": "Antalya-4",
+          "dodois_unit_id": "b6767c8268d79d4a11eee75a37bff13c",
+          "yemeksepeti_pos_id": "a9p6",
+          "yemeksepeti_platform_id": "a9p6",
+          "trendyol_id": "281620"
+        },
+        {
+          "dodois_name": "Antalya-5",
+          "dodois_unit_id": "11f00fa09157df29a73f45ba616a0f10",
+          "yemeksepeti_pos_id": "bhga",
+          "yemeksepeti_platform_id": "bhga",
+          "trendyol_id": "363133"
+        },
+        {
+          "dodois_name": "Antalya-6",
+          "dodois_unit_id": "11f00fac9abe1963fc4c9d013557e670",
+          "yemeksepeti_pos_id": "cts2",
+          "yemeksepeti_platform_id": "cts2",
+          "trendyol_id": "363132"
+        },
+        {
+          "dodois_name": "Isparta-1",
+          "dodois_unit_id": "11efd96fa299fb20a16a6e10ec910920",
+          "yemeksepeti_pos_id": "ui44",
+          "yemeksepeti_platform_id": "ui44",
+          "trendyol_id": "331553"
+        }
+      ]
+    }
+  ]
 }
