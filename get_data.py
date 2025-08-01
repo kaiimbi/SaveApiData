@@ -1,17 +1,13 @@
 import logging
-from initialization import initialization
 from json import loads
 from datetime import datetime, timedelta, timezone
+from typing import Any, Dict
 
 with open("data/regions.json", encoding="utf-8") as f:
     data = loads(f.read())
 
 
-def update_data(day_range = 0):
-    Yemeksepeti, trendyol_clients, DodoIS = initialization()
-    gmt_plus_3 = timezone(timedelta(hours=3))
-    now = datetime.now(gmt_plus_3) - timedelta(days=day_range)
-
+def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = None, DodoIS = None, old_data = None):
 
     result_data = {}
 
@@ -37,16 +33,25 @@ def update_data(day_range = 0):
 
 
             #DodoIS
-            dodois_data = get_dodois_data(DodoIS, unit_id, now)
-            result_data["dodois"] = dodois_data
+            if DodoIS:
+                dodois_data = get_dodois_data(DodoIS, unit_id, now)
+                result["dodois"] = dodois_data
 
             #Trendyol
-            trendyol_data = get_trendyol_data(trendyol_clients,trendyol_supplier_id, trendyol_unit_id, now)
-            result['trendyol'] = trendyol_data
+            if trendyol_clients:
+                trendyol_data = get_trendyol_data(trendyol_clients,trendyol_supplier_id, trendyol_unit_id, now)
+                result['trendyol'] = trendyol_data
+
 
             # Yemeksepeti
-            yemeksepeti_data = get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now, gmt_plus_3)
-            result['yemeksepeti'] = yemeksepeti_data
+            if Yemeksepeti:
+                old_yemeksepeti_order_data = {}
+                if old_data:
+                    old_yemeksepeti_order_data = old_data.get("yemeksepeti",{})
+
+
+                yemeksepeti_data = get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now, gmt_timezone, old_yemeksepeti_order_data)
+                result['yemeksepeti'] = yemeksepeti_data
 
             result_data[unit_id] = result
 
@@ -56,7 +61,7 @@ def update_data(day_range = 0):
 
 
 
-def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezone):
+def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezone, old_yemeksepeti_order_data: Dict[str, Any] = None):
     if yemeksepeti_unit_id:
         yemeksepeti_result = {}
 
@@ -66,14 +71,20 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
         if total_order:
 
             yemeksepeti_order_data = {
-                "cancelled_orders": [],
-                "total_price": 0,
-                "order_price_coordinate": []
+                "cancelled_orders": old_yemeksepeti_order_data.get('cancelled_orders', []),
+                "total_price": old_yemeksepeti_order_data.get('total_price', 0),
+                "order_price_coordinate": old_yemeksepeti_order_data.get('order_price_coordinate', []),
+                "orders_id" : old_yemeksepeti_order_data.get('orders_id', [])
+
             }
+
 
             order_list = orders['orders']
             for order in order_list:
                 order_detail = Yemeksepeti.get(f"/orders/{order}")['order']
+
+                if order_detail['code'] in yemeksepeti_order_data['orders_id']:
+                    continue
 
                 created_at_str = order_detail['createdAt']
                 created_at_utc = datetime.fromisoformat(created_at_str.replace("Z", "+00:00"))
@@ -83,19 +94,26 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
                     continue
 
                 if order_detail['status'] == "cancelled":
-                    yemeksepeti_order_data['cancelled_orders'].append(
-                        {"orderId": order_detail['code'], 'price': order_detail['price']['totalNet']})
+                    for cancelled_order in yemeksepeti_order_data['cancelled_orders']:
+                        if order_detail['code'] == cancelled_order['code']:
+                            break
+                        else:
+                            yemeksepeti_order_data['cancelled_orders'].append(
+                            {"orderId": order_detail['code'], 'price': order_detail['price']['totalNet']})
                     continue
+                yemeksepeti_order_data['orders_id'].append(order_detail['code'])
+
+
                 price = float(order_detail['price']['totalNet'])
                 yemeksepeti_order_data['total_price'] += price
 
                 yemeksepeti_order_data['order_price_coordinate'].append(
                     [price, order_detail['delivery']['address']['latitude'],
                      order_detail['delivery']['address']['longitude']])
-            yemeksepeti_result['orders'] = yemeksepeti_order_data
 
-        if yemeksepeti_result:
-            return yemeksepeti_result
+                yemeksepeti_result['orders'] = yemeksepeti_order_data
+
+        return yemeksepeti_result
 
 
 def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, now):
@@ -138,7 +156,6 @@ def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, 
 
             }
         )
-
         trendyol_order_data = {"total_order": 0,
                                "store_pickup_order": 0,
                                "total_price": 0,
@@ -156,7 +173,7 @@ def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, 
             if package['storePickupSelected']:
                 trendyol_order_data['store_pickup_order'] += 1
 
-            if package['packageStatus'] == "Cancelled" or package['packageStatus'] == "UnSupplied" and not package[
+            if (package['packageStatus'] == "Cancelled" or package['packageStatus'] == "UnSupplied") and not package[
                 'cancelInfo']:
                 trendyol_order_data['cancelled_orders'].append(
                     {"reason": package['cancelInfo'], "orderId": package['orderId'],
@@ -170,12 +187,11 @@ def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, 
                          (package['packageModificationDate'] - package['packageCreationDate']) / 60 / 1000)})
             trendyol_order_data['order_price_coordinate'].append(
                 [package['totalPrice'], package['address']['latitude'], package['address']['longitude']])
-
         if trendyol_order_data['total_order']:
             trendyol_result['orders'] = trendyol_order_data
 
-        if trendyol_result:
-            return trendyol_result
+        return trendyol_result
+
 
 def get_dodois_data(DodoIS, unit_id ,now):
 
@@ -187,7 +203,7 @@ def get_dodois_data(DodoIS, unit_id ,now):
         ("finances/sales/units", "salesStatistics", "result", "from", "to"),
         ("production/orders-handover-statistics", "ordersHandoverStatistics", "ordersHandoverStatistics", "from", "to"),
         ("delivery/statistics", "unitsStatistics", "unitsStatistics", "from", "to"),
-        ("orders/clients-statistics", "clientStatistics", "clientStatistics", "fromDate", "toDate"),
+        ("orders/clients-statistics", "clientStatistics", "clientStatistics", "fromDate", "toDate")
     ]
 
     for endpoint, key, response_key, from_param_name, to_param_name in endpoints:
@@ -204,5 +220,4 @@ def get_dodois_data(DodoIS, unit_id ,now):
     if response.get("result"):
         dodois_result["salesStatisticsWeekAgo"] = response["result"]
 
-    if dodois_result:
-        return dodois_result
+    return dodois_result

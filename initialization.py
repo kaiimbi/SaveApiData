@@ -6,6 +6,7 @@ from ApiClients.yemeksepeti_client import *
 from ApiClients.trendyol_client import *
 
 def initialization():
+
     yemeksepeti_client = POSMiddlewareClient(
         base_url=f"https://integration-middleware-tr.me.restaurant-partners.com/v2/chains/{os.getenv('YEMEKSEPETI_CHAINID')}/",
         username=os.getenv("YEMEKSEPETI_USERNAME"),

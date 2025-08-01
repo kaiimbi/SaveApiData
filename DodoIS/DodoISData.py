@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime, timedelta
 from dotenv import load_dotenv, set_key
 import os
+import time
 
 
 class AuthError(Exception):
@@ -111,31 +112,49 @@ class DodoISClient:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
 
+        self.RETRYABLE_STATUS_CODES = {429, 502, 503, 504}
+        self.MAX_RETRIES = 3
+        self.RETRY_BACKOFF = 5
     def _request(
-        self,
-        endpoint: str,
-        params: Dict[str, Any]
+            self,
+            endpoint: str,
+            params: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
-        Sends a GET request to the specified endpoint with error handling.
+        Sends a GET request to the specified endpoint with retry on certain errors.
         """
         url = f"{self.BASE_URL}{endpoint}"
         headers = self.auth.get_headers()
 
-        try:
-            response: Response = self.session.get(url, headers=headers, params=params, timeout=15)
-            response.raise_for_status()
-            return response.json()
+        for attempt in range(1, self.MAX_RETRIES + 1):
+            try:
+                response: Response = self.session.get(url, headers=headers, params=params, timeout=15)
+                response.raise_for_status()
+                return response.json()
 
-        except HTTPError as exc:
-            self.logger.error("API HTTP error: %s %s", response.status_code, exc)
-            raise APIError(f"API returned status {response.status_code}")
-        except (ConnectionError, Timeout) as exc:
-            self.logger.error("Network error: %s", exc)
-            raise APIError("Network error during API request.")
-        except RequestException as exc:
-            self.logger.error("Unexpected API error: %s", exc)
-            raise APIError("Unexpected error during API request.")
+            except HTTPError as exc:
+                status_code = response.status_code
+                self.logger.warning("HTTP error (attempt %d): %s", attempt, exc)
+
+                if status_code in self.RETRYABLE_STATUS_CODES and attempt < self.MAX_RETRIES:
+                    self.logger.info("Retrying after %d seconds due to status %d...", self.RETRY_BACKOFF, status_code)
+                    time.sleep(self.RETRY_BACKOFF)
+                    continue
+                else:
+                    self.logger.error("API HTTP error: %s %s", status_code, exc)
+                    raise APIError(f"API returned status {status_code}")
+
+            except (ConnectionError, Timeout) as exc:
+                self.logger.warning("Network error (attempt %d): %s", attempt, exc)
+                if attempt < self.MAX_RETRIES:
+                    self.logger.info("Retrying after %d seconds due to network error...", self.RETRY_BACKOFF)
+                    time.sleep(self.RETRY_BACKOFF)
+                    continue
+                raise APIError("Network error during API request.")
+
+            except RequestException as exc:
+                self.logger.error("Unexpected API error: %s", exc)
+                raise APIError("Unexpected error during API request.")
 
     def fetch_paginated(
         self,

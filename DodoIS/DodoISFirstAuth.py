@@ -50,6 +50,7 @@ class FirstAuth:
             auth_result = requests.post("https://auth.dodois.com/connect/token", data=request_body)
 
             if auth_result.status_code == 200:
+                print(auth_result.json())
                 refresh_token = auth_result.json().get("refresh_token")
                 if refresh_token:
                     set_key(self.__env__, "REFRESH_TOKEN", refresh_token)
