@@ -2,12 +2,19 @@ from db.mongo import MongoAPI
 from get_data import get_updated_data
 from datetime import datetime,timedelta,timezone
 from initialization import initialization
+import json
+
+with open("data/regions.json") as f:
+    regions_data = json.load(f)
+
+
 
 if __name__ == '__main__':
     Yemeksepeti, trendyol_clients, DodoIS  = initialization()
+    mongo = MongoAPI(collection_name="Daily_Stats")
 
     start_date_range = 0
-    end_date_range = 1
+    end_date_range = 365
     if start_date_range > 2:
         Yemeksepeti = None
 
@@ -15,26 +22,29 @@ if __name__ == '__main__':
 
         gmt_timezone = timezone(timedelta(hours=3))
         now = datetime.now(gmt_timezone) - timedelta(days=i)
+        file_date = now.date().strftime("%Y-%m-%d")
 
-        collection_name = str(now.month) + str(now.year)
-        file_name = str(now.day) + collection_name
 
-        mongo = MongoAPI(collection_name=collection_name)
-
-        old_data = mongo.find_json_by_name(file_name)
+        old_data_by_unit = {
+            unit['dodois_unit_id']: mongo.find_by_date_and_unit(file_date, unit)
+            for region in regions_data['divisions']
+            for unit in region['units']
+        }
 
         new_data = get_updated_data(now,
                                     gmt_timezone,
                                     Yemeksepeti,
                                     trendyol_clients,
                                     DodoIS,
-                                    old_data)
-        data = {
-            "name" : file_name,
-             "data" : new_data
-            }
-        if old_data:
-            mongo.update_json_by_name(file_name, data)
-        else:
-            mongo.create_json(data)
-        print(i)
+                                    old_data_by_unit)
+
+        for unit in new_data.keys():
+            data = {
+                "date" : file_date,
+                "update_time" : now,
+                "data" : new_data[unit],
+                "unit" : unit
+                }
+            if not mongo.create_json(data):
+                mongo.update_by_date_and_unit(file_date, unit, data)
+

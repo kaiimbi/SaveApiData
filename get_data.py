@@ -45,10 +45,8 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 
             # Yemeksepeti
             if Yemeksepeti:
-                old_yemeksepeti_order_data = {}
-                if old_data:
-                    old_yemeksepeti_order_data = old_data.get("yemeksepeti",{})
-
+                old_yemeksepeti_order_data = old_data.get(unit_id) or {}
+                old_yemeksepeti_order_data = old_yemeksepeti_order_data.get("yemeksepeti", {})
 
                 yemeksepeti_data = get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now, gmt_timezone, old_yemeksepeti_order_data)
                 result['yemeksepeti'] = yemeksepeti_data
