@@ -41,5 +41,5 @@ if __name__ == '__main__':
 
         for unit in data.keys():
             if not mongo.create_json(data[unit]):
-                mongo.update_by_date_and_unit(file_date, unit, data)
+                mongo.update_by_date_and_unit(file_date, unit, data[unit])
 
