@@ -18,7 +18,6 @@ def initialization():
 
     logging.info(f"Initialized Trendyol clients for regions: {os.getenv('REGIONS')}")
 
-
     auth = DodoISAuth(env_path="data/.env")
     dodois_client = DodoISClient(auth=auth)
 
@@ -41,7 +40,6 @@ def trendyol_initialization():
         supplier_id = os.getenv(f"TRENDYOL_SUPPLIER_ID_{region}")
         if not supplier_id:
             raise EnvironmentError(f"Missing TRENDYOL_SUPPLIER_ID for region {region}")
-
         trendyol_clients[supplier_id] = trendyol_client
 
     return trendyol_clients

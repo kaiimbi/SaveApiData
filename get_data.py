@@ -1,6 +1,6 @@
 import logging
 from json import loads
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, time
 from typing import Any, Dict
 
 with open("data/regions.json", encoding="utf-8") as f:
@@ -8,14 +8,12 @@ with open("data/regions.json", encoding="utf-8") as f:
 
 
 def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = None, DodoIS = None, old_data = None):
-
     result_data = {}
 
     for division in data['divisions']:
         trendyol_supplier_id = division['trendyol_supplier_id']
         region_name = division['region_name']
         franchise_name = division['franchise']
-
 
         for unit in division['units']:
 
@@ -25,12 +23,14 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 
             result = {
                 "name": unit['dodois_name'],
+                "date" : now.strftime("%Y-%m-%d"),
+                "unit" : unit['dodois_unit_id'],
+                "update_date" : now.strftime("%Y-%m-%d %H:%M:%S"),
                 "region_name": region_name,
                 "franchise": franchise_name,
                 "trendyol_id": trendyol_unit_id,
                 "yemeksepeti_id": yemeksepeti_unit_id,
             }
-
 
             #DodoIS
             if DodoIS:
@@ -39,7 +39,7 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 
             #Trendyol
             if trendyol_clients:
-                trendyol_data = get_trendyol_data(trendyol_clients,trendyol_supplier_id, trendyol_unit_id, now)
+                trendyol_data = get_trendyol_data(trendyol_clients,trendyol_supplier_id, trendyol_unit_id, now, gmt_timezone)
                 result['trendyol'] = trendyol_data
 
 
@@ -114,10 +114,11 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
         return yemeksepeti_result
 
 
-def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, now):
-    start_date_epochmille = int((now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp() + 3600 * 3) * 1000)
-    end_date_epochmille = int(
-        ((now.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)).timestamp() + 3600 * 3) * 1000)
+def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, now, gmt_timezone):
+    start_of_day = datetime.combine(now.date(), time(0, 0), tzinfo=gmt_timezone)
+    start_date_epochmille = int(start_of_day.timestamp() * 1000)
+    end_of_day = start_of_day + timedelta(days=1)
+    end_date_epochmille = int(end_of_day.timestamp() * 1000)
 
     if trendyol_unit_id:
         trendyol_result = {}
@@ -144,12 +145,14 @@ def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, 
         if response:
             trendyol_result['claims'] = response
 
+        FOUR_HOURS_MS = 4 * 3600 * 1000
+
         response = Trendyol.get_all_paginated(
 
             url=f"https://api.tgoapis.com/integrator/order/meal/suppliers/{trendyol_supplier_id}/packages",
             params={
-                "packageModificationStartDate": start_date_epochmille - 3600 * 1000 * 4,
-                "packageModificationEndDate": end_date_epochmille + 3600 * 1000 * 4,
+                "packageModificationStartDate": start_date_epochmille - FOUR_HOURS_MS,
+                "packageModificationEndDate": end_date_epochmille + FOUR_HOURS_MS,
                 "storeId": trendyol_unit_id,
 
             }
