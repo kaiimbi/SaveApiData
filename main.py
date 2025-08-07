@@ -1,3 +1,5 @@
+from pickletools import uint1
+
 from db.mongo import MongoAPI
 from get_data import get_updated_data
 from datetime import datetime,timedelta,timezone
@@ -14,8 +16,8 @@ if __name__ == '__main__':
     Yemeksepeti, trendyol_clients, DodoIS  = initialization()
     mongo = MongoAPI(collection_name="Daily_Stats")
 
-    start_date_range = 0
-    end_date_range = 2
+    start_date_range = 7
+    end_date_range = 10
     if start_date_range > 2:
         Yemeksepeti = None
 
@@ -24,8 +26,8 @@ if __name__ == '__main__':
 
     for i in range(start_date_range,end_date_range):
 
-        date = now - timedelta(days=i)
-        file_date = date.date().strftime("%Y-%m-%d")
+        now_date = now - timedelta(days=i)
+        file_date = now_date.date().strftime("%Y-%m-%d")
 
 
         old_data_by_unit = {}
@@ -33,7 +35,7 @@ if __name__ == '__main__':
             for unit in region['units']:
                 old_data_by_unit[unit['dodois_unit_id']] =  mongo.find_by_date_and_unit(file_date, unit['dodois_unit_id'])
 
-        new_data = get_updated_data(date,
+        new_data = get_updated_data(now_date,
                                     gmt_timezone,
                                     Yemeksepeti,
                                     trendyol_clients,
@@ -41,12 +43,12 @@ if __name__ == '__main__':
                                     old_data_by_unit)
 
         for unit in new_data.keys():
-            data = {
+            data = new_data[unit]
+            data.update({
                 "date" : file_date,
                 "update_date" : now.strftime("%Y-%m-%d:%H:%M:%S"),
-                "data" : new_data[unit],
-                "unit" : unit
-                }
+                "unit" : unit})
+
             if not mongo.create_json(data):
                 mongo.update_by_date_and_unit(file_date, unit, data)
 
