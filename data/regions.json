@@ -2,7 +2,7 @@
   "divisions": [
     {
       "region_name": "Adana",
-      "franchise": "Sergei",
+      "franchise": "Reuk",
       "trendyol_supplier_id" : "853152",
       "units": [
         {
@@ -37,7 +37,7 @@
     },
     {
       "region_name": "Mersin",
-      "franchise": "Sergei",
+      "franchise": "Reuk",
       "trendyol_supplier_id" : "853152",
       "units": [
         {
@@ -72,7 +72,7 @@
     },
     {
       "region_name": "Izmir",
-      "franchise": "Sergei",
+      "franchise": "Reuk",
       "trendyol_supplier_id" : "834064",
       "units": [
         {

@@ -114,7 +114,7 @@ class DodoISClient:
 
         self.RETRYABLE_STATUS_CODES = {429, 502, 503, 504}
         self.MAX_RETRIES = 3
-        self.RETRY_BACKOFF = 5
+        self.RETRY_BACKOFF = 10
     def _request(
             self,
             endpoint: str,
@@ -138,7 +138,7 @@ class DodoISClient:
 
                 if status_code in self.RETRYABLE_STATUS_CODES and attempt < self.MAX_RETRIES:
                     self.logger.info("Retrying after %d seconds due to status %d...", self.RETRY_BACKOFF, status_code)
-                    time.sleep(self.RETRY_BACKOFF)
+                    time.sleep(self.RETRY_BACKOFF * attempt)
                     continue
                 else:
                     self.logger.error("API HTTP error: %s %s", status_code, exc)
@@ -148,7 +148,7 @@ class DodoISClient:
                 self.logger.warning("Network error (attempt %d): %s", attempt, exc)
                 if attempt < self.MAX_RETRIES:
                     self.logger.info("Retrying after %d seconds due to network error...", self.RETRY_BACKOFF)
-                    time.sleep(self.RETRY_BACKOFF)
+                    time.sleep(self.RETRY_BACKOFF * attempt)
                     continue
                 raise APIError("Network error during API request.")
 

@@ -166,9 +166,10 @@ def get_trendyol_data(trendyol_clients, trendyol_supplier_id, trendyol_unit_id, 
                                }
 
         for package in response:
-            if not start_date_epochmille <= package['packageCreationDate'] or not package[
-                                                                                      'packageCreationDate'] < end_date_epochmille:
+            if not start_date_epochmille <= package['packageCreationDate'] or not package['packageCreationDate'] < end_date_epochmille:
                 continue
+
+
             trendyol_order_data['total_order'] += 1
             trendyol_order_data['total_price'] += package['totalPrice']
             if package['storePickupSelected']:
@@ -198,6 +199,7 @@ def get_dodois_data(DodoIS, unit_id ,now):
 
     start_date = now.strftime("%Y-%m-%d")
     end_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
+    print(start_date,end_date)
 
     dodois_result = {}
     endpoints = [
