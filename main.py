@@ -19,11 +19,13 @@ if __name__ == '__main__':
     if start_date_range > 2:
         Yemeksepeti = None
 
+    gmt_timezone = timezone(timedelta(hours=3))
+    now = datetime.now(gmt_timezone)
+
     for i in range(start_date_range,end_date_range):
 
-        gmt_timezone = timezone(timedelta(hours=3))
-        now = datetime.now(gmt_timezone) - timedelta(days=i)
-        file_date = now.date().strftime("%Y-%m-%d")
+        date = now - timedelta(days=i)
+        file_date = date.date().strftime("%Y-%m-%d")
 
 
         old_data_by_unit = {}
@@ -31,7 +33,7 @@ if __name__ == '__main__':
             for unit in region['units']:
                 old_data_by_unit[unit['dodois_unit_id']] =  mongo.find_by_date_and_unit(file_date, unit['dodois_unit_id'])
 
-        new_data = get_updated_data(now,
+        new_data = get_updated_data(date,
                                     gmt_timezone,
                                     Yemeksepeti,
                                     trendyol_clients,
@@ -41,7 +43,7 @@ if __name__ == '__main__':
         for unit in new_data.keys():
             data = {
                 "date" : file_date,
-                "update_time" : now,
+                "update_date" : now.strftime("%Y-%m-%d:%H:%M:%S"),
                 "data" : new_data[unit],
                 "unit" : unit
                 }

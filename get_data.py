@@ -72,7 +72,7 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
             "orders_id": oysd.get('orders_id', [])
 
         }
-        print(yemeksepeti_order_data)
+        
         if total_order:
 
             order_list = orders['orders']
@@ -90,6 +90,10 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
                     continue
 
                 if order_detail['status'] == "cancelled":
+                    if yemeksepeti_order_data['cancelled_orders']:
+                        yemeksepeti_order_data['cancelled_orders'].append(
+                            {"orderId": order_detail['code'], 'price': order_detail['price']['totalNet']})
+                        continue
                     for cancelled_order in yemeksepeti_order_data['cancelled_orders']:
                         if order_detail['code'] == cancelled_order['code']:
                             break
@@ -97,6 +101,7 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
                             yemeksepeti_order_data['cancelled_orders'].append(
                             {"orderId": order_detail['code'], 'price': order_detail['price']['totalNet']})
                     continue
+
                 yemeksepeti_order_data['orders_id'].append(order_detail['code'])
 
 
