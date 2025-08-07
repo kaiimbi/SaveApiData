@@ -15,7 +15,7 @@ if __name__ == '__main__':
     mongo = MongoAPI(collection_name="Daily_Stats")
 
     start_date_range = 0
-    end_date_range = 365
+    end_date_range = 2
     if start_date_range > 2:
         Yemeksepeti = None
 

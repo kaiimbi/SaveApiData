@@ -28,7 +28,7 @@ class MongoAPI:
         try:
             result = self.collection.find_one({"date": date, "unit": unit})
             if result:
-                logging.info(f"Документ найден: {date}, unit: {unit}")
+                logging.debug(f"Документ найден: {date}, unit: {unit}")
             else:
                 logging.warning(f"Документ не найден: {date}, unit: {unit}")
             return result
@@ -43,7 +43,7 @@ class MongoAPI:
                 {"$set": data}
             )
             if result.modified_count > 0:
-                logging.info(f"Документ обновлён: {date}, unit: {unit}")
+                logging.debug(f"Документ обновлён: {date}, unit: {unit}")
                 return True
             else:
                 logging.warning(f"⚠Документ не был обновлён: {date}, unit: {unit}")
@@ -63,7 +63,7 @@ class MongoAPI:
 
         try:
             self.collection.insert_one(data)
-            logging.info(f"Документ создан: {data['date']}, unit: {data['unit']}")
+            logging.debug(f"Документ создан: {data['date']}, unit: {data['unit']}")
             return True
         except PyMongoError as e:
             logging.error(f"Ошибка при создании документа: {e}")

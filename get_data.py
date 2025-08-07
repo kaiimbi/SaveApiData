@@ -52,7 +52,6 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 
             result_data[unit_id] = result
 
-            logging.info(f"{unit['dodois_name']} statistics added in result")
 
     return result_data
 
@@ -90,7 +89,7 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
                     continue
 
                 if order_detail['status'] == "cancelled":
-                    if yemeksepeti_order_data['cancelled_orders']:
+                    if len(yemeksepeti_order_data['cancelled_orders']):
                         yemeksepeti_order_data['cancelled_orders'].append(
                             {"orderId": order_detail['code'], 'price': order_detail['price']['totalNet']})
                         continue
@@ -202,7 +201,6 @@ def get_dodois_data(DodoIS, unit_id ,now):
 
     start_date = now.strftime("%Y-%m-%d")
     end_date = (now + timedelta(days=1)).strftime("%Y-%m-%d")
-    print(start_date,end_date)
 
     dodois_result = {}
     endpoints = [
