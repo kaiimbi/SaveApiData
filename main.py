@@ -26,11 +26,10 @@ if __name__ == '__main__':
         file_date = now.date().strftime("%Y-%m-%d")
 
 
-        old_data_by_unit = {
-            unit['dodois_unit_id']: mongo.find_by_date_and_unit(file_date, unit)
-            for region in regions_data['divisions']
-            for unit in region['units']
-        }
+        old_data_by_unit = {}
+        for region in regions_data['divisions']:
+            for unit in region['units']:
+                old_data_by_unit[unit['dodois_unit_id']] =  mongo.find_by_date_and_unit(file_date, unit['dodois_unit_id'])
 
         new_data = get_updated_data(now,
                                     gmt_timezone,

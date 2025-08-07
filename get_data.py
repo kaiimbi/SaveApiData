@@ -45,9 +45,8 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 
             # Yemeksepeti
             if Yemeksepeti:
-                old_yemeksepeti_order_data = old_data.get(unit_id) or {}
+                old_yemeksepeti_order_data = old_data[unit_id] or {}
                 old_yemeksepeti_order_data = old_yemeksepeti_order_data.get("yemeksepeti", {})
-
                 yemeksepeti_data = get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now, gmt_timezone, old_yemeksepeti_order_data)
                 result['yemeksepeti'] = yemeksepeti_data
 
@@ -62,20 +61,19 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezone, old_yemeksepeti_order_data: Dict[str, Any] = None):
     if yemeksepeti_unit_id:
         yemeksepeti_result = {}
-
         orders = Yemeksepeti.get("/orders/ids", params={"status": "accepted", "vendorId": yemeksepeti_unit_id})
         total_order = orders['count']
 
+        oysd = old_yemeksepeti_order_data.get("orders", {})
+        yemeksepeti_order_data = {
+            "cancelled_orders": oysd.get('cancelled_orders', []),
+            "total_price": oysd.get('total_price', 0),
+            "order_price_coordinate": oysd.get('order_price_coordinate', []),
+            "orders_id": oysd.get('orders_id', [])
+
+        }
+        print(yemeksepeti_order_data)
         if total_order:
-
-            yemeksepeti_order_data = {
-                "cancelled_orders": old_yemeksepeti_order_data.get('cancelled_orders', []),
-                "total_price": old_yemeksepeti_order_data.get('total_price', 0),
-                "order_price_coordinate": old_yemeksepeti_order_data.get('order_price_coordinate', []),
-                "orders_id" : old_yemeksepeti_order_data.get('orders_id', [])
-
-            }
-
 
             order_list = orders['orders']
             for order in order_list:
