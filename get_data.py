@@ -45,8 +45,7 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 
             # Yemeksepeti
             if Yemeksepeti:
-                old_yemeksepeti_order_data = old_data[unit_id] or {}
-                old_yemeksepeti_order_data = old_yemeksepeti_order_data.get("yemeksepeti", {})
+                old_yemeksepeti_order_data = (old_data or {}).get(unit_id, {}).get("yemeksepeti", {})
                 yemeksepeti_data = get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now, gmt_timezone, old_yemeksepeti_order_data)
                 result['yemeksepeti'] = yemeksepeti_data
 
@@ -63,8 +62,8 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
         orders_accepted = Yemeksepeti.get("/orders/ids", params={"status": "accepted", "vendorId": yemeksepeti_unit_id})
         orders_cancelled = Yemeksepeti.get("/orders/ids", params={"status": "cancelled", "vendorId": yemeksepeti_unit_id})
         orders = {
-            'count' :orders_accepted['count'] + orders_cancelled['count'],
-            "orders": orders_accepted['orders'] + orders_cancelled['orders']
+            'count' :orders_accepted.get("count",0) +orders_cancelled.get("count",0),
+            "orders": orders_accepted.get("orders",[]) + orders_cancelled.get("orders",[])
         }
 
         total_order = orders['count']
@@ -117,8 +116,8 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
                 address = order_detail.get('delivery',{}).get('address',{})
                 if address:
                     yemeksepeti_order_data['order_price_coordinate'].append(
-                        [price, address['latitude'],
-                         address['address']['longitude']])
+                        [price, address.get('latitude'),
+                         address.get('longitude')])
 
                 yemeksepeti_result['orders'] = yemeksepeti_order_data
 
