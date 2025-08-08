@@ -60,9 +60,15 @@ def get_updated_data(now, gmt_timezone, Yemeksepeti = None, trendyol_clients = N
 def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezone, old_yemeksepeti_order_data: Dict[str, Any] = None):
     if yemeksepeti_unit_id:
         yemeksepeti_result = {}
-        orders = Yemeksepeti.get("/orders/ids", params={"status": "accepted", "vendorId": yemeksepeti_unit_id})
-        total_order = orders['count']
+        orders_accepted = Yemeksepeti.get("/orders/ids", params={"status": "accepted", "vendorId": yemeksepeti_unit_id})
+        orders_cancelled = Yemeksepeti.get("/orders/ids", params={"status": "cancelled", "vendorId": yemeksepeti_unit_id})
+        orders = {
+            'count' :orders_accepted['count'] + orders_cancelled['count'],
+            "orders": orders_accepted['orders'] + orders_cancelled['orders']
+        }
 
+        total_order = orders['count']
+        print(old_yemeksepeti_order_data)
         oysd = old_yemeksepeti_order_data.get("orders", {})
         yemeksepeti_order_data = {
             "cancelled_orders": oysd.get('cancelled_orders', []),
@@ -71,6 +77,7 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
             "orders_id": oysd.get('orders_id', [])
 
         }
+        print(yemeksepeti_order_data)
         
         if total_order:
 
@@ -107,9 +114,11 @@ def get_yemeksepeti_data(Yemeksepeti, yemeksepeti_unit_id, now_time, gmt_timezon
                 price = float(order_detail['price']['totalNet'])
                 yemeksepeti_order_data['total_price'] += price
 
-                yemeksepeti_order_data['order_price_coordinate'].append(
-                    [price, order_detail['delivery']['address']['latitude'],
-                     order_detail['delivery']['address']['longitude']])
+                address = order_detail.get('delivery',{}).get('address',{})
+                if address:
+                    yemeksepeti_order_data['order_price_coordinate'].append(
+                        [price, address['latitude'],
+                         address['address']['longitude']])
 
                 yemeksepeti_result['orders'] = yemeksepeti_order_data
 

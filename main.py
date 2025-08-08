@@ -16,8 +16,8 @@ if __name__ == '__main__':
     Yemeksepeti, trendyol_clients, DodoIS  = initialization()
     mongo = MongoAPI(collection_name="Daily_Stats")
 
-    start_date_range = 7
-    end_date_range = 10
+    start_date_range = 0
+    end_date_range = 2
     if start_date_range > 2:
         Yemeksepeti = None
 
